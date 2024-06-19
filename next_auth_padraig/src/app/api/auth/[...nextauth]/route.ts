@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { User } from "@prisma/client";
 const prisma = new PrismaClient();
 import bcryptjs from "bcryptjs";
 const { compare } = bcryptjs;
@@ -48,7 +49,8 @@ export const authOptions: NextAuthOptions = {
           id: user.id + '',
           email: user.email,
           name: user.name,
-          randomKey: 'Hey cool'
+          randomKey: 'Hey cool',
+          role: user.role 
         }
       }
     })
@@ -61,18 +63,20 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: token.id,
-          randomKey: token.randomKey
+          randomKey: token.randomKey,
+          role: token.role
         }
       }
     },
     jwt: ({ token, user }) => {
       console.log('JWT Callback', { token, user })
       if (user) {
-        const u = user as unknown as any
+        const u = user as any
         return {
           ...token,
           id: u.id,
-          randomKey: u.randomKey
+          randomKey: u.randomKey,
+          role: u.role
         }
       }
       return token
